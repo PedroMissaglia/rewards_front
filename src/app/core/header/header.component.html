@@ -1,15 +1,81 @@
-<!-- <po-toolbar p-title="Rewards">
+<po-toolbar *ngIf="authService.isLogged; else notLogged"
+  p-title="Rewards"
+  [p-profile]="profile"
+  [p-profile-actions]="profileActions">
+</po-toolbar>
 
-</po-toolbar> -->
-<div>
+<ng-template #notLogged>
   <div class="po-toolbar">
     <div class="po-toolbar-title">Rewards</div>
     <div class="po-toolbar-group-icon">
       <po-button
+        class="po-m-1"
         p-label="Entrar"
-        (p-click)="handleSignIn()"></po-button>
+        (p-click)="pageSlide.open()"></po-button>
+      <po-button
+        class="po-m-1"
+        p-label="Registrar"
+        (p-click)="pageSlide2.open()">
+      </po-button>
     </div>
   </div>
-  <po-page-slide></po-page-slide>
-
-</div>
+  <po-page-slide #pageSlide>
+    <form [formGroup]="formSignIn">
+      <po-email
+        formControlName="email"
+        name="email"
+        p-label="Email">
+      </po-email>
+      <po-password
+        formControlName="password"
+        name="password"
+        p-label="Senha">
+      </po-password>
+      <div class="po-text-center">
+        <po-button
+          class="po-mt-1"
+          [p-disabled]="formSignIn.invalid"
+          p-label="Acessar"
+          (p-click)="handleSignIn()">
+        </po-button>
+      </div>
+      <po-divider></po-divider>
+      <div class="po-text-center">
+        <a><img src="./assets/btn_google_light_normal_ios.svg" (click)="loginGoogle()"></a>
+    </div>
+    </form>
+  </po-page-slide>
+  <po-page-slide #pageSlide2>
+    <form [formGroup]="formSignUp">
+      <po-input
+        p-icon="po-icon-user"
+        formControlName="name"
+        p-label="Nome">
+      </po-input>
+      <po-email
+        formControlName="email"
+        p-label="Email">
+      </po-email>
+      <po-input
+        formControlName="cpf"
+        p-mask="999.999.999-99"
+        [p-pattern]="patternCPF"
+        p-label="CPF">
+      </po-input>
+      <po-datepicker
+        formControlName="birthdate"
+        p-label="Data de Nascimento">
+      </po-datepicker>
+      <po-password
+        formControlName="password"
+        p-label="Senha">
+      </po-password>
+      <div class="po-text-center">
+        <po-button
+          p-label="Registrar"
+          [p-disabled]="formSignUp.invalid">
+        </po-button>
+      </div>
+    </form>
+  </po-page-slide>
+</ng-template>
