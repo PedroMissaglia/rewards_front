@@ -24,7 +24,9 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "src/custom-theme.scss",
+              "node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "./custom-theme/dist/css/po-theme-custom.min.css",
               "src/styles.css"
             ],
             "scripts": []
