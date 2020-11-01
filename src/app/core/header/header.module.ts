@@ -3,11 +3,12 @@ import { HeaderComponent } from './header.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SignUpModalComponent } from './sign-up-modal/sign-up-modal.component';
 
 
 
 @NgModule({
-  declarations: [HeaderComponent],
+  declarations: [HeaderComponent, SignUpModalComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

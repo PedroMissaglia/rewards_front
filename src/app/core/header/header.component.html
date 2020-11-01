@@ -1,6 +1,6 @@
 <po-toolbar *ngIf="authService.isLogged; else notLogged"
   p-title="Rewards"
-  [p-profile]="profile"
+  [p-profile]="authService.profile"
   [p-profile-actions]="profileActions">
 </po-toolbar>
 
@@ -15,7 +15,7 @@
       <po-button
         class="po-m-1"
         p-label="Registrar"
-        (p-click)="pageSlide2.open()">
+        (p-click)="signUpModal()">
       </po-button>
     </div>
   </div>
@@ -41,41 +41,13 @@
       </div>
       <po-divider></po-divider>
       <div class="po-text-center">
-        <a><img src="./assets/btn_google_light_normal_ios.svg" (click)="loginGoogle()"></a>
+        <a><img src="./assets/btn_google_light_normal_ios.svg" (click)="handleLoginGoogle()"></a>
     </div>
     </form>
   </po-page-slide>
-  <po-page-slide #pageSlide2>
-    <form [formGroup]="formSignUp">
-      <po-input
-        p-icon="po-icon-user"
-        formControlName="name"
-        p-label="Nome">
-      </po-input>
-      <po-email
-        formControlName="email"
-        p-label="Email">
-      </po-email>
-      <po-input
-        formControlName="cpf"
-        p-mask="999.999.999-99"
-        [p-pattern]="patternCPF"
-        p-label="CPF">
-      </po-input>
-      <po-datepicker
-        formControlName="birthdate"
-        p-label="Data de Nascimento">
-      </po-datepicker>
-      <po-password
-        formControlName="password"
-        p-label="Senha">
-      </po-password>
-      <div class="po-text-center">
-        <po-button
-          p-label="Registrar"
-          [p-disabled]="formSignUp.invalid">
-        </po-button>
-      </div>
-    </form>
-  </po-page-slide>
 </ng-template>
+
+<app-rewards-sign-up-modal
+  [parent]="formSignUp"
+  [event]="event">
+</app-rewards-sign-up-modal>

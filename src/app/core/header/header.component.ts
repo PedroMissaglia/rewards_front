@@ -1,8 +1,8 @@
 import { AuthService } from './../services/auth.service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { PoPageSlideComponent, PoToolbarAction, PoToolbarProfile } from '@po-ui/ng-components';
+import { PoToolbarAction, PoToolbarProfile } from '@po-ui/ng-components';
 
 @Component({
   selector: 'app-rewards-header',
@@ -14,16 +14,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   formSignIn: FormGroup;
   formSignUp: FormGroup;
-  patternCPF = '([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})';
-  profile: PoToolbarProfile;
+  event = new EventEmitter();
+  user;
   profileActions: Array<PoToolbarAction> = [
     { icon: 'po-icon-settings', label: 'Settings'},
     { icon: 'po-icon-exit', label: 'Exit', type: 'danger', separator: true, action: () => this.signOff() }
   ];
   constructor(
     private fb: FormBuilder,
-    public authService: AuthService) { }
-
+    public authService: AuthService
+  ) {}
 
   ngOnDestroy(): void {
    this.subscription.unsubscribe();
@@ -32,15 +32,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.formSignIn = this.renderFormSignIn();
     this.formSignUp = this.renderFormSignUp();
-    this.loadProfileInfo();
-
+    this.authService.isLogged ?
+      this.loadProfileInfo() : this.authService.redirectResult()
+      .then(res => {
+        if (res.user){
+          this.authService
+          .postGoogleUser(
+            {email: res.user.email,
+            name: res.user.displayName})
+            .subscribe(userToken => {
+              this.authService.saveToken(userToken);
+              this.loadProfileInfo();
+            });
+        }
+    });
   }
 
   loadProfileInfo(): void {
-    this.authService.isLogged ? this.profile =  {
-      subtitle: this.authService.info().email,
-      title: this.authService.info().unique_name
-    } : this.profile =  null;
+
+    if (this.authService.isLogged) {
+      this.authService.setProfile(this.authService.info().email, this.authService.info().unique_name);
+    }
   }
 
   renderFormSignIn() {
@@ -59,6 +71,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       password: ['', Validators.required]
     });
   }
+
+  signUpModal() {
+    this.event.emit();
+  }
+
 
   get email(): string{
     return this.formSignIn.get('email').value;
@@ -86,12 +103,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
-  async loginGoogle() {
-    // this.auth.googleSignin()
-    //   .then(() => {
-    //     this.router.navigate(['routine']);
-    //     this.auth.authByGoogle = true;
-    //     this.auth.setUserLogged(); });
+  async handleLoginGoogle() {
+    this.authService.setNotLogged();
+    this.authService.googleSignin()
+      .then(() => {
+    });
   }
-
 }
